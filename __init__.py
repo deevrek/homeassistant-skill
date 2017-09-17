@@ -11,7 +11,7 @@ from requests import get, post
 from fuzzywuzzy import fuzz
 import json
 
-__author__ = 'robconnolly, btotharye, dee'
+__author__ = 'robconnolly, btotharye'
 LOGGER = getLogger(__name__)
 DIM_KEYWORD={
     "up":100,
@@ -161,6 +161,7 @@ class HomeAssistantSkill(MycroftSkill):
                
         if  entity == None:      
 #TODO            self.speak_dialog('homeassistant.device.missing') 
+            self.speak('specify entity')
             return
     
         ha_entity = self.ha.find_entity(entity, search_scope,search_filter)
@@ -199,11 +200,10 @@ class HomeAssistantSkill(MycroftSkill):
                     .optionally("HomeLocKeyword"))
     def handle_dimlight_intent(self,message):
         value=message.data['DimValueKeyword']
-        if not value is None:
-            try:
-                value=int(value)*10
-            except ValueError:
-                value=DIM_KEYWORD[self.keyword[value]]
+        try:
+            value=int(value)*10
+        except ValueError:
+            value=DIM_KEYWORD[self.keyword[value]]
         light_entity=message.data.get('LightEntityKeyword')
         if light_entity in [self.keyword['white'],self.keyword['brightness'],self.keyword['light']]:
             if 'HomeLocKeyword'in message.data:
